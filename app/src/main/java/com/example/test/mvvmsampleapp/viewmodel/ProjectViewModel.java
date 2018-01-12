@@ -41,7 +41,7 @@ public class ProjectViewModel extends AndroidViewModel {
 
             Log.i(TAG,"ProjectViewModel projectID is " + projectID.getValue());
 
-            return projectRepository.getProjectDetails("Google", projectID.getValue());
+            return projectRepository.getProjectDetails("yeojoy", projectID.getValue());
         });
     }
 

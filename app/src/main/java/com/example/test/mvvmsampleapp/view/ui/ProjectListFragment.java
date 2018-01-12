@@ -1,13 +1,13 @@
 package com.example.test.mvvmsampleapp.view.ui;
 
 import android.arch.lifecycle.Lifecycle;
-import android.arch.lifecycle.LifecycleFragment;
 import android.arch.lifecycle.Observer;
 import android.arch.lifecycle.ViewModelProvider;
 import android.arch.lifecycle.ViewModelProviders;
 import android.databinding.DataBindingUtil;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,8 +24,9 @@ import java.util.List;
 
 import javax.inject.Inject;
 
-public class ProjectListFragment extends LifecycleFragment  implements Injectable {
-    public static final String TAG = "ProjectListFragment";
+public class ProjectListFragment extends Fragment implements Injectable {
+    public static final String TAG = ProjectListFragment.class.getSimpleName();
+
     private ProjectAdapter projectAdapter;
     private FragmentProjectListBinding binding;
 
@@ -57,23 +58,17 @@ public class ProjectListFragment extends LifecycleFragment  implements Injectabl
 
     private void observeViewModel(ProjectListViewModel viewModel) {
         // Update the list when the data changes
-        viewModel.getProjectListObservable().observe(this, new Observer<List<Project>>() {
-            @Override
-            public void onChanged(@Nullable List<Project> projects) {
-                if (projects != null) {
-                    binding.setIsLoading(false);
-                    projectAdapter.setProjectList(projects);
-                }
+        viewModel.getProjectListObservable().observe(this, projects -> {
+            if (projects != null) {
+                binding.setIsLoading(false);
+                projectAdapter.setProjectList(projects);
             }
         });
     }
 
-    private final ProjectClickCallback projectClickCallback = new ProjectClickCallback() {
-        @Override
-        public void onClick(Project project) {
-            if (getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.STARTED)) {
-                ((MainActivity) getActivity()).show(project);
-            }
+    private final ProjectClickCallback projectClickCallback = project -> {
+        if (getLifecycle().getCurrentState().isAtLeast(Lifecycle.State.STARTED)) {
+            ((MainActivity) getActivity()).show(project);
         }
     };
 }
